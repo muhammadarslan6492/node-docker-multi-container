@@ -1,0 +1,55 @@
+there is all docker command that are used in this project
+
+// 1st step run mogo image from docker hub to local machine
+
+docker run --name mongodb --rm -d mongo
+
+// 2nd step build backend image
+
+docker build -t goals-node .
+
+// 3rd run backend image
+
+docker run --name goals-backend --rm -d -p 80:80 goals-node
+
+// frontend docker command
+
+// build 
+
+docker build -t goals-react .
+
+// run 
+
+docker run --name goals-frontend --rm -p 3000:3000 -it goals-react
+
+
+// setup networks for effecient cross container communications
+
+// creaet network
+docker network create goals-network
+
+// run mongodb under the created network and this time no need to publish port
+
+docker run --name mongodb --rm -d --network goals-network mongo
+
+// check docker container 
+
+docker ps
+
+// for the backend 
+
+docker run --name goals-backend --rm -d -p 80:80 --network goals-network goals-node
+
+
+// for frontend
+
+docker run --name goals-frontend --rm -p 3000:3000 -it goals-react
+
+//  data presistence to mongodb with volumes
+
+docker run --name mongodb -v data:/data/db --rm -d --network goals-network -e MONGO_INITDB_ROOT_USERNAME=max -e MONGO_INITDB_ROOT_PASSWORD=test mongo
+
+
+// volumes , Bind Mount and polishing for the node js container
+
+docker run --name goals-backend -v C:\Users\muhammadarslan\Desktop\backend_important_stuf\docker-container-node\backend:/app -v logs:/app/logs -v /app/node_modules -e MONGODB_USERNAME=max --rm -p 80:80 --network goals-network goals-node
